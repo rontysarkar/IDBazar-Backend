@@ -12,10 +12,9 @@ export interface IUSER extends Document {
   profilePicture?: string;
   phoneNumber?: string;
   isVarified: boolean;
-  varificationToken?: string;
+  verificationToken?: string;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
-  agreeTerms: boolean;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -27,8 +26,7 @@ const userSchema = new Schema<IUSER>({
   profilePicture: { type: String, default: null },
   phoneNumber: { type: String, default: null },
   isVarified: { type: Boolean, default: false },
-  agreeTerms: { type: Boolean, default: false },
-  varificationToken: { type: String, default: null },
+  verificationToken: { type: String, default: null },
   resetPasswordToken: { type: String, default: null },
   resetPasswordExpires: { type: String, default: null },
 },{timestamps:true});
