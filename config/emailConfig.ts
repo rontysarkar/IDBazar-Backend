@@ -16,7 +16,6 @@ transporter.verify((error, success) => {
     console.log(
       "Email Service not ready to send email, check email configeration",
     );
-    console.log(error)
   } else {
     console.log("Email Service Ready to send email");
   }

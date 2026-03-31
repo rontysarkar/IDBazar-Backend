@@ -25,7 +25,7 @@ app.use(cookieParser());
 connectDb();
 
 // api endpoint
-// app.use('/api/auth',authRoutes)
+app.use('/api/auth',authRoutes)
 
 app.listen(PORT,()=>{
     console.log(`Listening on port ${PORT}`);
