@@ -48,6 +48,7 @@ export const emailVerify = async (req: Request, res: Response) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
     await user.save();
+    return response(res,200,"Verify Successfully");
   } catch (error) {
     console.log(error);
     response(res, 500, "Intarnal Server Error,Please try again");
@@ -83,3 +84,4 @@ export const login = async (req: Request, res: Response) => {
     response(res, 500, "Intarnal Server Error,Please try again");
   }
 };
+// hello
