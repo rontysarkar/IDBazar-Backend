@@ -2,7 +2,10 @@ import { Request, Response } from "express";
 import User from "../models/User";
 import { response } from "../utils/responseHandler";
 import crypto from "crypto";
-import { sendVerificationToEmail } from "../config/emailConfig";
+import {
+  sendResetPasswordLinkToEmail,
+  sendVerificationToEmail,
+} from "../config/emailConfig";
 import { generatAccessToken } from "../utils/generateAccessToken";
 
 export const register = async (req: Request, res: Response) => {
@@ -48,7 +51,7 @@ export const emailVerify = async (req: Request, res: Response) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
     await user.save();
-    return response(res,200,"Verify Successfully");
+    return response(res, 200, "Verify Successfully");
   } catch (error) {
     console.log(error);
     response(res, 500, "Intarnal Server Error,Please try again");
@@ -84,4 +87,61 @@ export const login = async (req: Request, res: Response) => {
     response(res, 500, "Intarnal Server Error,Please try again");
   }
 };
-// hello
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return response(res, 500, "No Account found with this email address");
+    }
+
+    const resetPasswordToken = await crypto.randomBytes(20).toString("hex");
+    user.resetPasswordToken = resetPasswordToken;
+    user.resetPasswordExpires = new Date(Date.now() + 3600000);
+    await user.save();
+    await sendResetPasswordLinkToEmail(email, resetPasswordToken);
+    return response(res, 200, "Send Reset Password Link to Your Email");
+  } catch (error) {
+    console.log(error);
+    response(res, 500, "Intarnal Server Error,Please try again");
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const token = req.params.token;
+    const { password } = req.body;
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+    if (!user) {
+      return response(res, 400, "Invalid or Exprired rest password token");
+    }
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+    return response(
+      res,
+      200,
+      "Your Password reset successfully,Now you can login in",
+    );
+  } catch (error) {
+    console.log(error);
+    response(res, 500, "Intarnal Server Error,Please try again");
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("access-token", {
+      httpOnly: true,
+    });
+    return response(res, 200, "Successfully Logout");
+  } catch (error) {
+    console.log(error);
+    response(res, 500, "Intarnal Server Error,Please try again");
+  }
+};
