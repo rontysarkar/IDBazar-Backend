@@ -6,6 +6,8 @@ import { authenticatedUser } from '../middleware/authMiddleware';
 const router = express.Router();
 
 
-router.post('/',authenticatedUser,multerMiddleware,postController.createPost)
+router.post('/',authenticatedUser,multerMiddleware,postController.createPost);
+router.get('/',authenticatedUser,postController.getAllPosts);
+router.get('/:slug',authenticatedUser,postController.getPostById);
 
 export default router;

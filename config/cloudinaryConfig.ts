@@ -5,12 +5,15 @@ import {
   UploadApiOptions,
   UploadApiResponse,
 } from "cloudinary";
+import { resolve } from "dns";
+import { rejects } from "assert";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME as string,
   api_key: process.env.CLOUDINARY_API_KEY as string,
   api_secret: process.env.CLOUDINARY_API_SECRET as string,
 });
+
 
 interface CustomFile extends Express.Multer.File {
   path: string;
