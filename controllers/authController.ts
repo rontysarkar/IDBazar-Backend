@@ -74,7 +74,7 @@ export const login = async (req: Request, res: Response) => {
       );
     }
     const accessToken = generatAccessToken(user);
-    res.cookie("access-token", accessToken, {
+    res.cookie("access_token", accessToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
@@ -136,10 +136,30 @@ export const resetPassword = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    res.clearCookie("access-token", {
+    res.clearCookie("access_token", {
       httpOnly: true,
     });
     return response(res, 200, "Successfully Logout");
+  } catch (error) {
+    console.log(error);
+    response(res, 500, "Intarnal Server Error,Please try again");
+  }
+};
+
+export const checkUserAuth = async (req: Request, res: Response) => {
+  try {
+    const userId = req?.id;
+    if (!userId) {
+      return response(res, 401, "Not Authorize user");
+    }
+
+    const user = await User.findById(userId).select(
+      "-password -verificationToken -resetPasswordExpires -resetPasswordToken",
+    );
+    if (!user) {
+      return response(res, 403, "User not found");
+    }
+    return response(res, 200, "User retrived successfully", user);
   } catch (error) {
     console.log(error);
     response(res, 500, "Intarnal Server Error,Please try again");

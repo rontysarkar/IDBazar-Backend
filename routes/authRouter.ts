@@ -1,5 +1,6 @@
 import { Router } from "express";
 import * as authController from "../controllers/authController";
+import { authenticatedUser } from "../middleware/authMiddleware";
 
 
 
@@ -11,5 +12,6 @@ router.get('/verify-email/:token',authController.emailVerify);
 router.post('/forgot-password',authController.forgotPassword);
 router.post('/reset-password/:token',authController.resetPassword);
 router.get('/logout',authController.logout);
+router.get('/verify-auth',authenticatedUser,authController.checkUserAuth);
 
 export default router;
